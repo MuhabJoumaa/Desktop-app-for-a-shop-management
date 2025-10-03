@@ -1,0 +1,302 @@
+﻿<Window x:Class="Shop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Shop"
+        mc:Ignorable="d"
+        Title="Информационная система - Магазин" Height="800" Width="820" FontSize="14">
+    
+   <!--Основное содержимое окна-->
+    <DockPanel LastChildFill="True">
+        <Ribbon DockPanel.Dock="Top">
+            <Ribbon.ApplicationMenu>
+                <RibbonApplicationMenu SmallImageSource="/Pictures/Globe_256x256.png">
+                    <RibbonApplicationMenuItem ImageSource="/Pictures/Log Out_256x256.png" Click="exitMenu_Click" 
+                                               x:Name="exitMenu" Header="Выход"/>
+                </RibbonApplicationMenu>
+            </Ribbon.ApplicationMenu>
+
+            <!--Главная вкладка-->
+            <RibbonTab Header="Главная">
+                <RibbonGroup Header="Работа с продуктами">
+                    <RibbonButton x:Name="btnAdd" Label="Добавить" 
+                                  LargeImageSource="/Pictures/Add_256x256.png" 
+                                  Click="btnAdd_Click"/>
+                    <RibbonButton x:Name="btnRemove" Label="Удалить" 
+                                  SmallImageSource="/Pictures/Remove_256x256.png" 
+                                  Click="btnRemove_Click"/>
+                    <RibbonButton x:Name="btnPrUpdate" Label="Обновить" 
+                                  SmallImageSource="/Pictures/Refresh_256x256.png" 
+                                  Click="btnUpdate_Click"/>
+                </RibbonGroup >
+                <RibbonGroup Header="Селекция">
+                    <RibbonButton x:Name="bntShow" Label="Поиск по Id" 
+                                  LargeImageSource="/Pictures/Find_256x256.png" 
+                                  Click="bntShow_Click"/>
+                </RibbonGroup>
+            </RibbonTab>
+
+            <!--Кнопки для заказов-->
+            <RibbonTab x:Name="rtOrder" ContextualTabGroupHeader="Orders"
+                  Header="Заказы">
+                <RibbonGroup Header="Экспорт">
+                    <RibbonButton x:Name="btnExport" 
+                                  Click="btnExport_Click" 
+                                  Label="Excel" 
+                                  LargeImageSource="/Pictures/excel.png"/>
+                    <RibbonButton x:Name="btnGraph" Click="btnGraph_Click"
+                                  Label="График" 
+                                  LargeImageSource="/Pictures/Presentation_256x256.png"/>
+
+                </RibbonGroup>
+            </RibbonTab>
+
+            <!--Контекстная вкладка-->
+            <Ribbon.ContextualTabGroups>
+                <RibbonContextualTabGroup x:Name="rtOrderConext" Header="Orders"
+                                    Background="Green" />
+            </Ribbon.ContextualTabGroups>
+            
+        </Ribbon>
+        <StatusBar Height="30" DockPanel.Dock="Bottom">
+            <TextBlock Margin="3" Text="123" x:Name="tblStatus"/>
+        </StatusBar>
+        
+        <Grid>
+            <TabControl Style="{StaticResource ResourceKey=UIElementStyle}" 
+                        x:Name="mainTab" SelectionChanged="mainTab_SelectionChanged">
+                
+                <!--Первая вкладка-->
+                <TabItem Header="Ценник">
+                    <Grid x:Name="gridProduct">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="0.8*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                       
+                        <!--Первая строка-->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <ListBox x:Name="lstProducts" Grid.ColumnSpan="2" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <StackPanel Orientation="Horizontal" Grid.Row="1">
+                                <TextBlock Text="Сортировать по " VerticalAlignment="Center" 
+                                           Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                                <ComboBox x:Name="cbPrSort" SelectedIndex="0" MinWidth="200"
+                                          Style="{StaticResource ResourceKey=UIElementStyle}" 
+                                          SelectionChanged="cbPrSort_SelectionChanged">
+                                    <ComboBoxItem Content="Идентификатор"/>
+                                    <ComboBoxItem Content="Имя"/>
+                                    <ComboBoxItem Content="Цена"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </Grid>
+                        
+                        <!--Разделитель - вторая строка-->
+                        <GridSplitter Height="3" Grid.Row="1" HorizontalAlignment="Stretch"/>
+                        
+                        <!--Третья строка-->
+                        <Grid DataContext="{Binding SelectedItem, ElementName=lstProducts, Mode=OneWay}" x:Name="grdPoductDetail" Grid.Row="2" Style="{StaticResource ResourceKey=UIElementStyle}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <!--Элементы управления распределены по строкам и столбцам-->
+                            <TextBlock FontSize="7" Text="Код детали" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="7" x:Name="tbPrId" Text="{Binding Id}" Grid.Column="1" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBlock FontSize="7" Grid.Row="1" Text="Название детали" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="7" Text="{Binding Name}" x:Name="tbPrModel" Grid.Row="1" Grid.Column="1" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBlock FontSize="7" Grid.Row="2" Text="Категория" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="7" Text="{Binding Category}" x:Name="tbPrCategory" Grid.Row="2" Grid.Column="1" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBlock FontSize="7" Grid.Row="3" Text="Цена" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="7" Text="{Binding Price}" x:Name="tbPrPrice" Grid.Row="3" Grid.Column="1" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+
+                            <TextBlock FontSize="7" Grid.Row="4" Text="Себестоимость" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="7" Text="{Binding CostPrice}" x:Name="tbPrCostPrice" Grid.Row="4" Grid.Column="1" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+
+                            <TextBlock FontSize="7" Grid.Row="5" Text="Количество" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="7" Text="{Binding Quantity}" x:Name="tbPrQuantity" Grid.Row="5" Grid.Column="1" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBlock FontSize="7" Grid.Row="6" Text="Описание" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="10" Text="{Binding Description}" x:Name="tbPrDescription" Grid.Row="7" Grid.ColumnSpan="2" Style="{StaticResource ResourceKey=tbDescription}"/>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Клиенты">
+                    <!--Вторая вкладка-->
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="0.8*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <ListBox x:Name="lstClients" Style="{StaticResource ResourceKey=UIElementStyle}" Grid.ColumnSpan="2"/>
+                            <StackPanel Orientation="Horizontal" Grid.Row="1">
+                                <TextBlock Text="Сортировать по " Style="{StaticResource ResourceKey=UIElementStyle}" VerticalAlignment="Center"/>
+                                <ComboBox x:Name="cbClSort" SelectedIndex="0" MinWidth="200" Style="{StaticResource ResourceKey=UIElementStyle}" SelectionChanged="cbClSort_SelectionChanged" >
+                                    <ComboBoxItem Content="Идентификатор"/>
+                                    <ComboBoxItem Content="Фамилия/Организация"/>
+                                    <ComboBoxItem Content="Организация - Частное лицо"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </Grid>
+                        
+                        <GridSplitter Height="3" Grid.Row="1" HorizontalAlignment="Stretch"/>
+                        
+                        <Grid Grid.Row="2" DataContext="{Binding SelectedValue, ElementName=lstClients}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock FontSize="10" Text="Идентификатор" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="10" Text="{Binding Id}" x:Name="tbClId" Grid.Column="1" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBlock FontSize="10" Grid.Row="2" Text="Фамилия / Организация" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="10" Text="{Binding Name}" x:Name="tbClName" Grid.Row="2" Grid.Column="1" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBlock FontSize="10" Grid.Row="3" Text="Имя" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="10" Text="{Binding FirstName}" x:Name="tbClFName" Grid.Row="3" Grid.Column="1" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBlock FontSize="10" Grid.Row="4" Text="Отчество" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="10" Text="{Binding MiddleName}" x:Name="tbClMName" Grid.Row="4" Grid.Column="1" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+
+                            <TextBlock FontSize="10" Grid.Row="5" Text="Адрес" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="10" Text="{Binding Address}" x:Name="tbClAddress" Grid.Row="5" Grid.Column="1" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+
+                            <CheckBox FontSize="10" IsChecked="{Binding IsPerson}" x:Name="chClIsPerson" Grid.Column="1" Grid.Row="6" Content="Частное лицо" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBlock FontSize="10" Grid.Row="6" Text="Примечание" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            
+                            <TextBox Text="{Binding Description}" x:Name="tbClDescription" Grid.Row="7" Grid.ColumnSpan="2" Style="{StaticResource ResourceKey=tbDescription}"/>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                
+                <TabItem Header="Продажа деталей">
+                    <!--Третья вкладка-->
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="0.8*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <ListBox x:Name="lstOrders" Grid.ColumnSpan="2" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <StackPanel Orientation="Horizontal" Grid.Row="1">
+                                <TextBlock Text="Сортировать по " Style="{StaticResource ResourceKey=UIElementStyle}" VerticalAlignment="Center"/>
+                                <ComboBox x:Name="cbOrSort" SelectedIndex="0" Height="30" MinWidth="200" Style="{StaticResource ResourceKey=UIElementStyle}" SelectionChanged="cbOrSort_SelectionChanged" >
+                                    <ComboBoxItem Content="Идентификатор"/>
+                                    <ComboBoxItem Content="Имя"/>
+                                    <ComboBoxItem Content="Дата"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </Grid>
+                        
+                        <GridSplitter Grid.Row="1" Height="3" HorizontalAlignment="Stretch" />
+                        
+                        <Grid Grid.Row="2" DataContext="{Binding SelectedValue, ElementName=lstOrders}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock FontSize="7" Grid.Row="0" Text="Идентификатор" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="7" Text="{Binding Id}" x:Name="tbOrId" Grid.Row="0" Grid.Column="1" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBlock FontSize="7" Grid.Row="1" Text="Имя заказа" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="7" Text="{Binding Name}" x:Name="tbOrName" Grid.Row="1" Grid.Column="1" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBlock FontSize="7" Grid.Row="2" Text="Товар" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <ComboBox FontSize="7" SelectedValue="{Binding OrderProduct}" 
+                                Grid.Row="2"  x:Name="cbOrProduct" 
+                                Grid.Column="1" 
+                                Style="{StaticResource ResourceKey=UIElementStyle}"
+                                ItemsSource="{Binding Items, ElementName=lstProducts}"
+                                      SelectionChanged="cbOrProduct_SelectionChanged"/>
+                            <TextBlock FontSize="7" Grid.Row="3" Text="Клиент" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <ComboBox FontSize="7" SelectedValue="{Binding OrderClient}" x:Name="cbOrClient" 
+                                Grid.Row="3" Grid.Column="1" 
+                                Style="{StaticResource ResourceKey=UIElementStyle}"
+                                ItemsSource="{Binding Items, ElementName=lstClients}"/>
+                            <TextBlock FontSize="7" Grid.Row="4" Text="Дата" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <!--Кнопки фильтра и выбор даты-->
+                            <DockPanel Grid.Row="4" Grid.Column="1">
+                                <DatePicker FontSize="7" SelectedDate="{Binding OrderDate}" 
+                                            DockPanel.Dock="Left" x:Name="calOrDate"
+                                            Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                                <Button FontSize="7" x:Name="btnOrFilterByDate" 
+                                        Content="Фильтр по дате" 
+                                        HorizontalAlignment="Stretch" 
+                                        Style="{StaticResource ResourceKey=UIElementStyle}" 
+                                        Click="btnOrFilterByDate_Click"/>
+                                <Button FontSize="7" DockPanel.Dock="Right" 
+                                        x:Name="btnOrClearFilter" 
+                                        Content="Очистить фильтр" 
+                                        HorizontalAlignment="Stretch"
+                                        Style="{StaticResource ResourceKey=UIElementStyle}"
+                                        Click="btnOrClearFilter_Click"/>
+                            </DockPanel>
+
+                            <TextBlock FontSize="7" Grid.Row="5" Text="Прибыль" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="7" Text="{Binding Profit}" IsReadOnly="True" x:Name="tbOrProfit" Grid.Row="5" Grid.Column="1" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+
+                            <TextBlock FontSize="7" Grid.Row="6" Text="Количество" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="7" Text="{Binding Quantity}" x:Name="tbOrQuantity" Grid.Row="6" Grid.Column="1" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBlock FontSize="5" Grid.Row="7" Text="Примечание" Style="{StaticResource ResourceKey=UIElementStyle}"/>
+                            <TextBox FontSize="7" Text="{Binding Description}" x:Name="tbOrDescription" Grid.Row="8" Grid.ColumnSpan="2" Style="{StaticResource ResourceKey=tbDescription}"/>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </DockPanel>
+</Window>
